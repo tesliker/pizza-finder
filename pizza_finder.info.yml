@@ -1,0 +1,12 @@
+name: Pizza Finder
+machine_name: pizza-finder
+type: pdb
+description: 'React Example Component 1'
+package: React
+version: '1.0.0'
+core: '8.x'
+module_status: active
+presentation: react
+add_js:
+  footer:
+    'pizza-finder.js': {}
