@@ -52,18 +52,125 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var ProcessedImage = React.createClass({
+	    displayName: 'ProcessedImage',
+
+
+	    render: function render() {
+	        var url = this.props.uri.replace('public://', '/react/sites/default/files/');
+	        return React.createElement('img', { src: url });
+	    }
+	}); /**
+	     * @file
+	     * First example react component.
+	     */
+
+	var PizzaFinder = React.createClass({
+	    displayName: 'PizzaFinder',
+
+	    getInitialState: function getInitialState() {
+	        return { pizzas: undefined };
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        this.getPizzas();
+	    },
+
+	    getPizzas: function getPizzas() {
+	        self = this;
+	        jQuery.post(this.props.url, function (data) {
+	            self.setState({
+	                pizzas: data
+	            });
+	        });
+	    },
+
+	    render: function render() {
+	        if (!this.state.pizzas) {
+	            return React.createElement(
+	                'div',
+	                null,
+	                'Not here yet'
+	            );
+	        }
+	        if (this.state.pizzas.length === 0) {
+	            return React.createElement(
+	                'div',
+	                null,
+	                'No pizzas added.'
+	            );
+	        }
+	        console.log(this.state.pizzas.data);
+	        var pizzaList = this.state.pizzas.data.pizzas.map(function (pizza, i) {
+	            return React.createElement(
+	                'div',
+	                null,
+	                React.createElement(
+	                    'h2',
+	                    null,
+	                    pizza.title
+	                ),
+	                React.createElement(ProcessedImage, { uri: pizza.image.entity.uri }),
+	                React.createElement('div', { dangerouslySetInnerHTML: { __html: pizza.body.processed } }),
+	                React.createElement(
+	                    'label',
+	                    null,
+	                    'sizes'
+	                ),
+	                React.createElement(
+	                    'ul',
+	                    null,
+	                    pizza.sizesAvailable.map(function (size, k) {
+	                        return React.createElement(
+	                            'li',
+	                            null,
+	                            size.size.name
+	                        );
+	                    })
+	                ),
+	                React.createElement(
+	                    'label',
+	                    null,
+	                    'Toppings'
+	                ),
+	                React.createElement(
+	                    'ul',
+	                    null,
+	                    pizza.toppings.map(function (topping, k) {
+	                        return React.createElement(
+	                            'li',
+	                            null,
+	                            topping.topping.name
+	                        );
+	                    })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { style: styles.button },
+	                    'Show Reviews'
+	                )
+	            );
+	        });
+	        return React.createElement(
+	            'div',
+	            null,
+	            pizzaList
+	        );
+	    }
+	});
+
+	var styles = {
+	    button: {
+	        backgroundColor: 'blue',
+	        color: 'white'
+	    }
+	};
+
 	ReactDOM.render(React.createElement(
 	    'div',
 	    null,
-	    React.createElement(
-	        'h1',
-	        null,
-	        'Hello, world!'
-	    )
-	), document.getElementById('pizza-finder')); /**
-	                                              * @file
-	                                              * First example react component.
-	                                              */
+	    React.createElement(PizzaFinder, { url: '/react/graphql?query={ pizzas: nodeQuery(type: "pizza") { ... on EntityNodePizza { title, body { processed }, image { entity { uri } } sizesAvailable { size: entity { name } } toppings { topping: entity { name } } } } } ' })
+	), document.getElementById('pizza-finder'));
 
 /***/ },
 /* 1 */
