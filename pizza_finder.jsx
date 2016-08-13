@@ -55,6 +55,16 @@
 	ReactDOM.render(React.createElement(
 	    'div',
 	    null,
+	    React.createElement(_radium.Style, { rules: {
+	            h1: {
+	                backgroundColor: '#000'
+	            }
+	        } }),
+	    React.createElement(
+	        'div',
+	        null,
+	        'BlaBla'
+	    ),
 	    React.createElement(
 	        'h1',
 	        null,

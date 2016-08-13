@@ -3,7 +3,13 @@
  * First example react component.
  */
 
+import Radium, { Style } from 'radium'
+
+
+
 ReactDOM.render(
-  React.createElement("h1", null, "Hello, world!"),
+    <div>
+        <h1 >Hello, world!</h1>
+    </div>,
   document.getElementById('pizza-finder')
 );

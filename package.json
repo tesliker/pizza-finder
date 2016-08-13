@@ -1,0 +1,29 @@
+{
+  "name": "pizza_finder",
+  "version": "1.0.0",
+  "description": "React JS Pizza Finder for Drupal 8 using Decoupled Blocks and GraphQL",
+  "main": "pizza_finder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tesliker/pizza-finder.git"
+  },
+  "author": "tesliker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tesliker/pizza-finder/issues"
+  },
+  "homepage": "https://github.com/tesliker/pizza-finder#readme",
+  "devDependencies": {
+    "babel-core": "^6.13.2",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-react": "^6.11.1",
+    "radium": "^0.18.1",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "webpack": "^1.13.1"
+  }
+}
