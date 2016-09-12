@@ -69,7 +69,7 @@
 	    displayName: 'PizzaFinder',
 
 	    getInitialState: function getInitialState() {
-	        return { pizzas: undefined };
+	        return { pizzas: undefined, reviews: undefined, currentNid: -1, fontSize: 16 };
 	    },
 
 	    componentDidMount: function componentDidMount() {
@@ -85,7 +85,44 @@
 	        });
 	    },
 
+	    showReviews: function showReviews(event) {
+	        if (this.state.currentNid === event.currentTarget.dataset.nid) {
+	            this.setState({ currentNid: -1 });
+	        } else {
+	            this.setState({ currentNid: event.currentTarget.dataset.nid });
+	            self = this;
+	            var url = "https://busbeetruckparts.com/api/v1/search_node/retrieve.json?keys=busbee";
+	            jQuery.ajax({
+	                url: url,
+	                headers: { "accept": "application/jsonp" },
+	                type: "GET"
+	            });
+	        }
+	    },
+
+	    reviews: function reviews(nid) {
+	        var self = this;
+	        var reviews = '';
+	        if (this.state.reviews !== undefined) {
+	            this.state.reviews.data.comments.map(function (comment, i) {
+	                reviews += comment.renderedOutput;
+	            });
+	            if (parseInt(this.state.currentNid) === parseInt(nid)) {
+	                reviews = React.createElement('div', { dangerouslySetInnerHTML: { __html: reviews } });
+	            } else {
+	                reviews = '';
+	            }
+	        }
+	        return reviews;
+	    },
+
+	    changeFont: function changeFont(event) {
+	        this.setState({ fontSize: event.target.value });
+	    },
+
 	    render: function render() {
+	        var self = this;
+
 	        if (!this.state.pizzas) {
 	            return React.createElement(
 	                'div',
@@ -100,7 +137,24 @@
 	                'No pizzas added.'
 	            );
 	        }
-	        console.log(this.state.pizzas.data);
+
+	        var styles = {
+	            button: {
+	                backgroundColor: 'blue',
+	                color: 'white',
+	                textAlign: 'center',
+	                padding: '15px 0'
+	            },
+	            gridColumn: {
+	                width: '28%',
+	                padding: '1%',
+	                display: 'inline-block',
+	                verticalAlign: 'top',
+	                fontSize: this.state.fontSize
+	            }
+
+	        };
+
 	        var pizzaList = this.state.pizzas.data.pizzas.map(function (pizza, i) {
 	            return React.createElement(
 	                'div',
@@ -110,66 +164,73 @@
 	                    null,
 	                    pizza.title
 	                ),
-	                React.createElement(ProcessedImage, { uri: pizza.image.entity.uri }),
-	                React.createElement('div', { dangerouslySetInnerHTML: { __html: pizza.body.processed } }),
 	                React.createElement(
-	                    'label',
-	                    null,
-	                    'sizes'
-	                ),
-	                React.createElement(
-	                    'ul',
-	                    null,
-	                    pizza.sizesAvailable.map(function (size, k) {
-	                        return React.createElement(
-	                            'li',
-	                            null,
-	                            size.size.name
-	                        );
-	                    })
-	                ),
-	                React.createElement(
-	                    'label',
-	                    null,
-	                    'Toppings'
-	                ),
-	                React.createElement(
-	                    'ul',
-	                    null,
-	                    pizza.toppings.map(function (topping, k) {
-	                        return React.createElement(
-	                            'li',
-	                            null,
-	                            topping.topping.name
-	                        );
-	                    })
+	                    'div',
+	                    { style: styles.gridColumn },
+	                    React.createElement(ProcessedImage, { uri: pizza.image.entity.uri })
 	                ),
 	                React.createElement(
 	                    'div',
-	                    { style: styles.button },
+	                    { style: styles.gridColumn },
+	                    React.createElement('div', { dangerouslySetInnerHTML: { __html: pizza.body.processed } })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { style: styles.gridColumn },
+	                    React.createElement(
+	                        'label',
+	                        null,
+	                        'sizes'
+	                    ),
+	                    React.createElement(
+	                        'ul',
+	                        null,
+	                        pizza.sizesAvailable.map(function (size, k) {
+	                            return React.createElement(
+	                                'li',
+	                                null,
+	                                size.size.name
+	                            );
+	                        })
+	                    ),
+	                    React.createElement(
+	                        'label',
+	                        null,
+	                        'Toppings'
+	                    ),
+	                    React.createElement(
+	                        'ul',
+	                        null,
+	                        pizza.toppings.map(function (topping, k) {
+	                            return React.createElement(
+	                                'li',
+	                                null,
+	                                topping.topping.name
+	                            );
+	                        })
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { 'data-nid': pizza.nid, style: styles.button, onClick: self.showReviews },
 	                    'Show Reviews'
-	                )
+	                ),
+	                self.reviews(pizza.nid)
 	            );
 	        });
 	        return React.createElement(
 	            'div',
 	            null,
+	            React.createElement('input', { type: 'text', onChange: this.changeFont }),
 	            pizzaList
 	        );
 	    }
 	});
 
-	var styles = {
-	    button: {
-	        backgroundColor: 'blue',
-	        color: 'white'
-	    }
-	};
-
 	ReactDOM.render(React.createElement(
 	    'div',
 	    null,
-	    React.createElement(PizzaFinder, { url: '/react/graphql?query={ pizzas: nodeQuery(type: "pizza") { ... on EntityNodePizza { title, body { processed }, image { entity { uri } } sizesAvailable { size: entity { name } } toppings { topping: entity { name } } } } } ' })
+	    React.createElement(PizzaFinder, { url: '/react/graphql?query={ pizzas: nodeQuery(type: "pizza") { ... on EntityNodePizza { nid, title, body { processed }, image { entity { uri } } sizesAvailable { size: entity { name } } toppings { topping: entity { name } } } } } ' })
 	), document.getElementById('pizza-finder'));
 
 /***/ },
